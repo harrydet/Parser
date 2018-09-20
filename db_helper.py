@@ -1,4 +1,5 @@
 import sqlite3
+import logging
 
 
 class Database(object):
@@ -38,7 +39,7 @@ class Database(object):
 
             self.cur.execute(query, (instruction, trap, file_no, line_no))
         except sqlite3.Error as e:
-            print("Database error: Instruction %s is duplicate" % instruction)
+            logging.info("Database error: Instruction %s is duplicate" % instruction)
         except Exception as e:
             print("Exception in _query: %s" % e)
 

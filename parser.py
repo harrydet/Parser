@@ -9,11 +9,11 @@ import progressbar
 from time import sleep
 from db_helper import Database
 
-FILE_DIR = "/home/harry/workspace/Controller"
+FILE_DIR = "/home/harry/workspace/Controller/Output/"
 
 rx_dict = {
-    'instruction': re.compile(r'Instruction:  (?P<instruction>.{11})'),
-    'trap': re.compile(r'Instruction:  .{13}(?P<trap>.{4})')
+    'instruction': re.compile(r'instruction: (?P<instruction>.{11})'),
+    'trap': re.compile(r'instruction: .{13}(?P<trap>.{4})')
 }
 
 
@@ -41,10 +41,15 @@ def parse_file(filepath):
             while line:
                 keys, matches = _parse_line(line)
 
-                if keys.__contains__('instruction') or keys.__contains__('trap'):
+                if keys.__contains__('instruction') and not keys.__contains__('trap'):
+                    instruction = matches[keys.index('instruction')].group('instruction')
+                    trap = 'v'
+                    db.save_instruction(instruction, trap, filepath, count)
+                elif keys.__contains__('instruction') and keys.__contains__('trap'):
                     instruction = matches[keys.index('instruction')].group('instruction')
                     trap = matches[keys.index('trap')].group('trap')
                     db.save_instruction(instruction, trap, filepath, count)
+
                 count = count + 1
                 bar.update(count)
                 line = file_object.readline()
